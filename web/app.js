@@ -67,6 +67,19 @@
     }
   }
 
+  /* 结果卡入场动画 + 严重程度顶部色条：复用 #conclusion 已有的 ok/warn/bad 类 */
+  function revealCard() {
+    const c = $("resultCard");
+    c.classList.remove("reveal");
+    void c.offsetWidth;   /* 强制 reflow，使动画重复触发 */
+    c.classList.add("reveal");
+  }
+  function applySev() {
+    const cls = $("conclusion").className.replace("conclusion", "").trim();
+    $("resultCard").dataset.sev = (cls === "ok" || cls === "warn" || cls === "bad") ? cls : "";
+    revealCard();
+  }
+
   function showError(msg) {
     const card = $("resultCard");
     card.classList.remove("hidden");
@@ -75,6 +88,7 @@
     $("conclusion").className = "conclusion bad";
     $("statusRow").innerHTML = "";
     ["lockerBlock", "reasonBlock", "fixBlock", "pathBlock"].forEach((id) => $(id).classList.add("hidden"));
+    applySev();
     card.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
@@ -179,6 +193,7 @@
     renderList("reasonBlock", "reasonList", d.reasons || [], "没有发现异常原因");
     renderList("fixBlock", "fixList", d.fixes || [], "无需处理");
 
+    applySev();
     $("resultCard").scrollIntoView({ behavior: "smooth", block: "start" });
     renderCompare(d.path || $("pathInput").value.trim(), d);
   }
@@ -391,6 +406,7 @@
       pblock.classList.add("hidden");
     }
 
+    applySev();
     $("resultCard").scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
@@ -537,6 +553,7 @@
         runScan(r.path);
       });
     });
+    applySev();
     $("resultCard").scrollIntoView({ behavior: "smooth", block: "start" });
   }
 

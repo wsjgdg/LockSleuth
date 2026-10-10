@@ -22,7 +22,7 @@ if %errorlevel% neq 0 (
 rem [1/3] 生成内嵌界面（单文件分发）
 where cl >nul 2>nul
 if %errorlevel%==0 (
-    cl /nologo tools\embed_web.c /Fe:tools\embed_web.exe >nul 2>&1
+    cl /nologo /utf-8 tools\embed_web.c /Fe:tools\embed_web.exe >nul 2>&1
 ) else (
     gcc -O2 tools\embed_web.c -o tools\embed_web.exe 2>nul
 )
@@ -41,7 +41,7 @@ if not exist src\web_embedded.h (
 where cl >nul 2>nul
 if %errorlevel%==0 (
     echo [1/1] 使用 MSVC 编译...
-    cl /O2 /W3 /D_CRT_SECURE_NO_WARNINGS src\main.c src\diagnose.c src\rules.c src\browse.c src\clipboard.c src\locate.c src\history.c src\close_handle.c src\menu.c src\jsonutil.c src\httpd.c src\open.c src\autostart.c src\tray.c /Fe:filelock.exe /link rstrtmgr.lib comdlg32.lib shell32.lib ole32.lib ws2_32.lib advapi32.lib user32.lib
+    cl /utf-8 /O2 /W3 /D_CRT_SECURE_NO_WARNINGS src\main.c src\diagnose.c src\rules.c src\browse.c src\clipboard.c src\locate.c src\history.c src\close_handle.c src\menu.c src\jsonutil.c src\httpd.c src\open.c src\autostart.c src\tray.c /Fe:filelock.exe /link rstrtmgr.lib comdlg32.lib shell32.lib ole32.lib ws2_32.lib advapi32.lib user32.lib
     if %errorlevel% neq 0 goto :fail
     goto :ok
 )
