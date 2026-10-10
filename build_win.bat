@@ -6,6 +6,19 @@ rem  支持 MSVC(cl) 或 MinGW(gcc)，自动检测已安装的编译器
 rem =====================================================
 setlocal
 
+rem [0] 若 cl 不在 PATH（例如直接双击运行），自动定位并调用 VS 的 vcvars64.bat 设置 MSVC 环境
+where cl >nul 2>nul
+if %errorlevel% neq 0 (
+    set "VCV="
+    for %%D in ("C:\Program Files*\Microsoft Visual Studio\*\*\VC\Auxiliary\Build\vcvars64.bat") do (
+        if exist "%%D" set "VCV=%%D"
+    )
+    if defined VCV (
+        echo [信息] 调用 %VCV% 设置 MSVC 环境...
+        call "%VCV%"
+    )
+)
+
 rem [1/3] 生成内嵌界面（单文件分发）
 where cl >nul 2>nul
 if %errorlevel%==0 (

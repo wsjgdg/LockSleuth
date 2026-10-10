@@ -20,6 +20,22 @@
 #  define WIN32_LEAN_AND_MEAN
 #  include <windows.h>
 #  include <restartmanager.h>
+/* MSVC 缺失的 POSIX 兼容补齐（MinGW/GCC 已自带，#ifndef 防重定义） */
+#  ifndef strncasecmp
+#    define strncasecmp _strnicmp
+#  endif
+#  ifndef strcasecmp
+#    define strcasecmp _stricmp
+#  endif
+#  ifndef S_ISDIR
+#    define S_ISDIR(m) (((m) & _S_IFMT) == _S_IFDIR)
+#  endif
+#  ifndef S_ISREG
+#    define S_ISREG(m) (((m) & _S_IFMT) == _S_IFREG)
+#  endif
+#  ifndef S_ISLNK
+#    define S_ISLNK(m) (0)
+#  endif
 #else
 #  include <unistd.h>
 #  include <fcntl.h>

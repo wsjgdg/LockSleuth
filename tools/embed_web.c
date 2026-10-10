@@ -23,7 +23,7 @@ static int emit(FILE *out, const char *name, const char *path)
         if (++col % 16 == 0) fprintf(out, "\n");
     }
     if (col % 16) fprintf(out, "\n");
-    fprintf(out, "};\nstatic const unsigned int %s_LEN = %ld;\n\n", name, len);
+    fprintf(out, "};\n#define %s_LEN %ld\n\n", name, len);
     fclose(f);
     return 0;
 }
