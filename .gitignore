@@ -1,0 +1,26 @@
+# 构建产物
+filelock
+filelock.exe
+tools/embed_web
+tools/embed_web.exe
+src/web_embedded.h
+*.o
+*.exe
+
+# 测试二进制
+tests/unit_test
+tests/unit_history
+
+# 覆盖率 / sanitizer 产物
+*.gcda
+*.gcno
+*.gcov
+
+# 运行时日志与测试草稿
+*.log
+fl_s.txt
+fl_t/
+
+# 系统文件
+.DS_Store
+Thumbs.db
