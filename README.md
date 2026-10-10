@@ -1,4 +1,4 @@
-# filelock — 文件占用诊断器 🔒
+# LockSleuth — 文件占用诊断器 🔒
 
 查明电脑上**文件为什么被占用**，并直接给出解决办法。带图形界面，支持 **Windows / macOS**（Linux 也能用）。
 
@@ -26,10 +26,10 @@
 - **⚡ 强力清除**：释放句柄 → 删除 → 自动复测三连，顽固文件一步到位
 - **🗑 删除**：检测完直接删，顽固文件可先释放占用再删
 - 界面内一键结束占用进程（带确认提示）
-- **右键菜单集成**：`filelock --install-menu` 后，资源管理器右键文件即可“用 filelock 查占用”
+- **右键菜单集成**：`LockSleuth --install-menu` 后，资源管理器右键文件即可“用 LockSleuth 查占用”
 
 **④ 检测历史**
-- 检测过的文件自动留档（本地 `~/.filelock_history.jsonl`，最多 200 条）
+- 检测过的文件自动留档（本地 `~/.LockSleuth_history.jsonl`，最多 200 条）
 - 点击历史条目即可回填路径**重新检测**，支持一键清空
 - 历史记录留存读/写/删三态与文件大小（供前后对比）；API 支持按路径/结论搜索（`/api/history?q=关键词`）
 
@@ -61,29 +61,29 @@ make
 
 ```bat
 rem MSVC（在 x64 Native Tools Command Prompt 中）
-cl /O2 /W3 src\*.c /Fe:filelock.exe /link rstrtmgr.lib comdlg32.lib shell32.lib ole32.lib ws2_32.lib
+cl /utf-8 /O2 /W3 src\*.c /Fe:LockSleuth.exe /link rstrtmgr.lib comdlg32.lib shell32.lib ole32.lib ws2_32.lib advapi32.lib user32.lib
 
 rem MinGW
-gcc -O2 -Wall src/*.c -o filelock.exe -lrstrtmgr -lcomdlg32 -lshell32 -lole32 -lws2_32
+gcc -O2 -Wall src/*.c -o LockSleuth.exe -lrstrtmgr -lcomdlg32 -lshell32 -lole32 -lws2_32 -ladvapi32 -luser32
 ```
 
 > 界面已内嵌，单文件即可分发；`web/` 目录可选（存在时优先生效）。
-> 把文件拖到程序图标上也可以直接检测（等价于 `filelock 路径`）。
+> 把文件拖到程序图标上也可以直接检测（等价于 `LockSleuth 路径`）。
 
 ## 🚀 使用
 
 ```bash
-./filelock                  # 图形界面：启动本地服务并自动打开浏览器
-./filelock 路径             # 命令行：诊断该文件/文件夹
-./filelock --paste "报错提示"  # 命令行：分析报错文本
-./filelock -k 路径          # 命令行：强制结束占用进程
-./filelock --json 路径      # JSON 输出（脚本友好）
-./filelock --wait 30 路径   # 轮询等待直到解除占用
-./filelock --install-menu   # Windows：注册资源管理器右键菜单
-./filelock --open [路径]    # 后台拉起服务并打开界面（右键菜单入口）
-./filelock --tray           # Windows：服务常驻系统托盘
-./filelock --install-autostart   # 开机自启（当前用户，免管理员）
-./filelock --autostart-status    # 查看开机自启状态
+./LockSleuth                  # 图形界面：启动本地服务并自动打开浏览器
+./LockSleuth 路径             # 命令行：诊断该文件/文件夹
+./LockSleuth --paste "报错提示"  # 命令行：分析报错文本
+./LockSleuth -k 路径          # 命令行：强制结束占用进程
+./LockSleuth --json 路径      # JSON 输出（脚本友好）
+./LockSleuth --wait 30 路径   # 轮询等待直到解除占用
+./LockSleuth --install-menu   # Windows：注册资源管理器右键菜单
+./LockSleuth --open [路径]    # 后台拉起服务并打开界面（右键菜单入口）
+./LockSleuth --tray           # Windows：服务常驻系统托盘
+./LockSleuth --install-autostart   # 开机自启（当前用户，免管理员）
+./LockSleuth --autostart-status    # 查看开机自启状态
 ```
 
 图形界面地址：`http://127.0.0.1:8632/`（仅监听本机，不对外网开放；端口占用自动顺延）
@@ -91,7 +91,7 @@ gcc -O2 -Wall src/*.c -o filelock.exe -lrstrtmgr -lcomdlg32 -lshell32 -lole32 -l
 ## 📁 项目结构
 
 ```
-filelock/
+LockSleuth/
 ├── src/
 │   ├── main.c        入口：图形界面 / 命令行双模式
 │   ├── diagnose.c    诊断引擎（Windows Restart Manager / lsof / /proc，含进程所属账户）
@@ -126,7 +126,7 @@ filelock/
 - 服务只绑定 `127.0.0.1`，不对外网开放，不上传任何数据
 - 剪贴板感知**只在本地读取、本地判断**，只有疑似报错的文本才会弹出建议，可随时在界面关闭
 - 拖拽定位只在用户目录等常见位置**按文件名查找**，不上传文件内容
-- 检测历史只存本机（`~/.filelock_history.jsonl`），可随时清空
+- 检测历史只存本机（`~/.LockSleuth_history.jsonl`），可随时清空
 - “结束进程”操作需要在界面中二次确认；命令行 `-k` 需显式指定
 
 ## ❓ 常见问题
@@ -141,7 +141,7 @@ filelock/
 → 系统设置 → 隐私与安全性 → 完全磁盘访问权限，给终端或 App 打勾
 
 **macOS 想要 Finder 右键菜单？**
-→ 打开“自动操作”→ 新建“快速操作”→ 添加“运行 Shell 脚本”（内容：`/path/to/filelock "$1"`）→ 保存后在
+→ 打开“自动操作”→ 新建“快速操作”→ 添加“运行 Shell 脚本”（内容：`/path/to/LockSleuth "$1"`）→ 保存后在
   系统设置 → 键盘 → 快捷键 → 服务 中绑定；或直接把文件拖到程序图标上
 
 **报错提示匹配不到规则？**

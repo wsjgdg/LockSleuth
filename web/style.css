@@ -551,3 +551,79 @@ tr.hidden { display: none; }
   .conclusion.warn { background: rgba(120, 53, 15, .35); color: var(--amber); }
   .compare, .action-bar { border-color: var(--line); }
 }
+
+/* ---- 头部右上角控件（平台标识 + 主题切换） ---- */
+.head-right-top {
+  position: relative; z-index: 1;
+  display: flex; align-items: center; gap: 12px;
+}
+.badge.theme-toggle {
+  cursor: pointer;
+  border: 1px solid rgba(255, 255, 255, .26);
+  background: rgba(255, 255, 255, .16);
+  font-size: 16px;
+  padding: 7px 12px;
+  transition: background .15s, transform .1s;
+}
+.badge.theme-toggle:hover { background: rgba(255, 255, 255, .28); }
+.badge.theme-toggle:active { transform: scale(.94); }
+
+/* ---- 首屏空状态引导卡 ---- */
+.guide h3 { margin: 0 0 14px; font-size: 16px; }
+.guide-list { margin: 0; padding-left: 20px; color: var(--muted); font-size: 14px; line-height: 1.7; }
+.guide-list li { margin-bottom: 10px; }
+.guide-list b { color: var(--ink); }
+.guide-list code {
+  font-family: var(--mono);
+  background: var(--accent-soft);
+  color: var(--accent);
+  padding: 1px 6px;
+  border-radius: 6px;
+  font-size: 12.5px;
+}
+.guide-actions { display: flex; gap: 10px; margin-top: 18px; flex-wrap: wrap; }
+
+/* ---- 危险操作组（红虚线隔开，提示破坏性） ---- */
+.action-bar .danger-group {
+  padding-left: 14px;
+  border-left: 2px dashed rgba(226, 60, 60, .35);
+}
+.tips-head-right { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+
+/* ---- 主题覆盖：手动选择优先于系统 prefers-color-scheme ---- */
+:root[data-theme="dark"] {
+  --bg: #0e1525;
+  --card: #18233a;
+  --ink: #f3f6fc;
+  --muted: #93a1bd;
+  --line: #283450;
+  --accent: #8b8df8;
+  --accent-2: #6d70e8;
+  --accent-soft: #232f4d;
+  --green: #4ade80;
+  --green-soft: rgba(22, 101, 52, .32);
+  --red: #f87171;
+  --red-soft: rgba(127, 29, 29, .38);
+  --amber: #fbbf24;
+  --amber-soft: rgba(120, 53, 15, .32);
+  --shadow: 0 8px 28px rgba(0, 0, 0, .45);
+  --shadow-sm: 0 2px 10px rgba(0, 0, 0, .4);
+}
+:root[data-theme="light"] {
+  --bg: #f4f5fa;
+  --card: #ffffff;
+  --ink: #181b27;
+  --muted: #6a7184;
+  --line: #ecedf2;
+  --accent: #5b5ef0;
+  --accent-2: #8b8df8;
+  --accent-soft: #eef0fe;
+  --green: #16a34a;
+  --green-soft: #e7f6ec;
+  --red: #e23c3c;
+  --red-soft: #fdeaea;
+  --amber: #d97706;
+  --amber-soft: #fdf2e0;
+  --shadow: 0 8px 28px rgba(24, 27, 39, .07);
+  --shadow-sm: 0 2px 10px rgba(24, 27, 39, .05);
+}

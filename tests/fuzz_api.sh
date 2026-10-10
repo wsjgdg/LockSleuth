@@ -4,7 +4,7 @@
 # 用法: ./tests/fuzz_api.sh [端口]
 set -u
 DIR="$(cd "$(dirname "$0")/.." && pwd)"
-BIN="$DIR/filelock"
+BIN="$DIR/LockSleuth"
 PORT="${1:-39777}"
 B="http://127.0.0.1:$PORT"
 LOG="${FL_FUZZ_LOG:-/tmp/fl_fuzz_srv.log}"

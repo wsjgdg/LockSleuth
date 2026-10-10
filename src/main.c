@@ -1,7 +1,7 @@
 /*
  * main.c — 入口
  *   双击/无参数      → 启动图形界面（内置本地服务 + 自动打开浏览器）
- *   filelock 路径    → 命令行诊断（结果打印到终端）
+ *   LockSleuth 路径    → 命令行诊断（结果打印到终端）
  */
 #include "filelock.h"
 
@@ -53,8 +53,8 @@ static int find_webroot(char *out, size_t n)
         "web",
         "%.4000s/web",
         "%.4000s/../web",
-        "%.4000s/../share/filelock/web",
-        "filelock/web",
+        "%.4000s/../share/LockSleuth/web",
+        "LockSleuth/web",
         NULL
     };
     for (int i = 0; fmt[i]; i++) {
@@ -70,7 +70,7 @@ static int find_webroot(char *out, size_t n)
 
 static void usage(const char *prog)
 {
-    printf("filelock — 文件占用诊断器（图形界面 + 命令行）\n\n");
+    printf("LockSleuth — 文件占用诊断器（图形界面 + 命令行）\n\n");
     printf("用法:\n");
     printf("  %s                     启动图形界面（自动打开浏览器）\n", prog);
     printf("  %s <文件或目录路径>     命令行模式：诊断该路径\n", prog);
@@ -200,7 +200,7 @@ int main(int argc, char **argv)
         }
         if (np > 0) {
             printf("\n提示中检测到路径，可进一步用本工具检测占用进程：\n");
-            for (int i = 0; i < np; i++) printf("      filelock \"%s\"\n", paths[i]);
+            for (int i = 0; i < np; i++) printf("      LockSleuth \"%s\"\n", paths[i]);
         }
         printf("==============================================\n");
         return 0;
@@ -262,7 +262,7 @@ int main(int argc, char **argv)
     int realport = port;
     httpd_init_token();   /* CSRF 会话令牌（Web API 鉴权用） */
     printf("╔══════════════════════════════════════════════╗\n");
-    printf("║  filelock — 文件占用诊断器                   ║\n");
+    printf("║  LockSleuth — 文件占用诊断器                   ║\n");
     printf("╚══════════════════════════════════════════════╝\n");
     printf("  界面来源 : %s\n", webroot[0] ? webroot : "内嵌（单文件模式）");
     printf("  服务地址 : http://127.0.0.1:%d/  （若端口被占用会自动顺延）\n", realport);

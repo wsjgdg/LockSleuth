@@ -1,5 +1,5 @@
 /*
- * filelock — 文件占用诊断器（图形界面版）
+ * LockSleuth — 文件占用诊断器（图形界面版）
  * 公共头文件
  */
 #ifndef FILELOCK_H

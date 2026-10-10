@@ -263,7 +263,7 @@ static int win_find_lockers(const WCHAR *wpath, Locker *out, int max)
 
 int kill_locker(const Locker *L)
 {
-    /* 自我保护：拒绝结束当前 filelock 进程自身 */
+    /* 自我保护：拒绝结束当前 LockSleuth 进程自身 */
     if ((long)GetCurrentProcessId() == L->pid) return -1;
     HANDLE hp = OpenProcess(PROCESS_TERMINATE, FALSE, (DWORD)L->pid);
     if (!hp) return -1;
@@ -364,7 +364,7 @@ static int diag_windows(const char *path, Report *r, int deep)
         for (int i = 0; i < n; i++)
             report_add_reason(r, "被进程占用：%s (PID %ld)",
                               r->lockers[i].name[0] ? r->lockers[i].name : "(未知)", r->lockers[i].pid);
-        report_add_fix(r, "关闭占用进程后再操作；本工具命令行模式可用  filelock -k \"%s\"  强制结束", path);
+        report_add_fix(r, "关闭占用进程后再操作；本工具命令行模式可用  LockSleuth -k \"%s\"  强制结束", path);
     } else if (n == 0) {
         if (r->restricted)
             report_add_reason(r, "未发现普通进程句柄，可能是：内核驱动、杀毒软件、Windows Search 索引器或资源管理器预览窗格");
@@ -661,7 +661,7 @@ static int proc_scan(const char *path, Locker *out, int max, int is_dir, int dee
 
 int kill_locker(const Locker *L)
 {
-    /* 自我保护：绝不结束本进程（filelock 自身不可能占用被诊断文件，
+    /* 自我保护：绝不结束本进程（LockSleuth 自身不可能占用被诊断文件，
      * 若 pid 指向自己说明参数异常，直接拒绝） */
     if ((long)getpid() == L->pid) return -1;
     if (kill((pid_t)L->pid, SIGTERM) != 0) return -1;
@@ -822,7 +822,7 @@ static int diag_posix(const char *path, Report *r, int deep)
         for (int i = 0; i < n; i++)
             report_add_reason(r, "被进程占用：%s (PID %ld)",
                               r->lockers[i].name[0] ? r->lockers[i].name : "(未知)", r->lockers[i].pid);
-        report_add_fix(r, "确认无用后：kill %ld   或命令行模式  filelock -k \"%s\"", r->lockers[0].pid, path);
+        report_add_fix(r, "确认无用后：kill %ld   或命令行模式  LockSleuth -k \"%s\"", r->lockers[0].pid, path);
         report_add_fix(r, "查看完整占用详情：sudo lsof -- \"%s\"", abspath);
     } else if (n == 0) {
         if (r->restricted)

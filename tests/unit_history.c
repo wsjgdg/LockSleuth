@@ -1,6 +1,6 @@
 /*
  * unit_history.c — 检测历史的单元测试（history.c）
- *   用临时 HOME 做隔离，不碰真实 ~/.filelock_history.jsonl。
+ *   用临时 HOME 做隔离，不碰真实 ~/.LockSleuth_history.jsonl。
  *   覆盖：写入→立即可读、倒序、分页、搜索、超量截断、清空、空文件。
  */
 #ifndef _DEFAULT_SOURCE
@@ -9,7 +9,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
+#ifndef _WIN32
+#  include <unistd.h>
+#else
+#  include <direct.h>       /* _mkdir, _rmdir */
+#  include <io.h>          /* _mktemp_s */
+#endif
 #include "../src/filelock.h"
 
 static int g_pass = 0, g_fail = 0;
@@ -34,12 +39,25 @@ static void add_n(int base, int count)
 
 int main(void)
 {
-    /* 隔离 HOME：全部写到临时目录 */
-    char dir[] = "/tmp/flhistXXXXXX";
+    /* 隔离 HOME / APPDATA：全部写到临时目录，不碰真实历史文件
+     * （history.c 在 Windows 读 %APPDATA%、其它读 $HOME，故按平台重定向） */
+    char dir[512];
+    char hfile[512];
+#ifdef _WIN32
+    char tmpl[512];
+    DWORD tlen = GetTempPathA(sizeof(tmpl), tmpl);
+    if (tlen == 0 || tlen >= sizeof(tmpl)) { fprintf(stderr, "GetTempPath failed\n"); return 2; }
+    snprintf(dir, sizeof(dir), "%sflhistXXXXXX", tmpl);
+    if (_mktemp_s(dir, strlen(dir) + 1) != 0) { perror("_mktemp_s"); return 2; }
+    if (_mkdir(dir) != 0) { perror("_mkdir"); return 2; }
+    if (_putenv_s("APPDATA", dir) != 0) { perror("_putenv_s"); return 2; }
+    snprintf(hfile, sizeof(hfile), "%s\\LockSleuth_history.jsonl", dir);
+#else
+    snprintf(dir, sizeof(dir), "/tmp/flhistXXXXXX");
     if (!mkdtemp(dir)) { perror("mkdtemp"); return 2; }
     setenv("HOME", dir, 1);
-    char hfile[512];
-    snprintf(hfile, sizeof(hfile), "%s/.filelock_history.jsonl", dir);
+    snprintf(hfile, sizeof(hfile), "%s/.LockSleuth_history.jsonl", dir);
+#endif
 
     printf("== 写入与读取 ==\n");
     add_n(0, 5);
@@ -104,7 +122,11 @@ int main(void)
 
     /* 收拾现场 */
     remove(hfile);
+#ifdef _WIN32
+    _rmdir(dir);
+#else
     rmdir(dir);
+#endif
 
     printf("\n== 结果: %d 通过 / %d 失败 ==\n", g_pass, g_fail);
     return g_fail ? 1 : 0;

@@ -1,4 +1,4 @@
-/* filelock — 界面逻辑 */
+/* LockSleuth — 界面逻辑 */
 (function () {
   "use strict";
 
@@ -13,6 +13,31 @@
     else if (ua.includes("Linux")) p = "Linux";
     $("platform").textContent = "● 运行平台：" + p;
   })();
+
+  /* ---------- 主题切换（覆盖系统偏好，持久化到 localStorage） ---------- */
+  const THEME_KEY = "locksleuth-theme";
+  (function initTheme() {
+    let t = null;
+    try { t = localStorage.getItem(THEME_KEY); } catch (e) {}
+    if (t !== "dark" && t !== "light") {
+      t = (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) ? "dark" : "light";
+    }
+    document.documentElement.dataset.theme = t;
+    const tbtn = $("themeToggle");
+    if (tbtn) tbtn.textContent = t === "dark" ? "☀️" : "🌙";
+  })();
+  $("themeToggle").addEventListener("click", () => {
+    const next = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+    document.documentElement.dataset.theme = next;
+    $("themeToggle").textContent = next === "dark" ? "☀️" : "🌙";
+    try { localStorage.setItem(THEME_KEY, next); } catch (e) {}
+  });
+
+  /* ---------- 首屏引导卡 ---------- */
+  function hideGuide() {
+    const g = $("guideCard");
+    if (g) g.classList.add("hidden");
+  }
 
   /* ---------- 通用 ---------- */
   function esc(s) {
@@ -159,6 +184,7 @@
 
   function renderScan(d) {
     $("resultCard").classList.remove("hidden");
+    hideGuide();
     $("resultTitle").textContent = "诊断结果";
     $("pathBlock").classList.add("hidden");
     $("batchBlock").classList.add("hidden");
@@ -359,6 +385,7 @@
 
   function renderAnalyze(d) {
     $("resultCard").classList.remove("hidden");
+    hideGuide();
     $("resultTitle").textContent = "报错提示分析结果";
     $("statusRow").innerHTML = "";
     $("lockerBlock").classList.add("hidden");
@@ -525,6 +552,7 @@
 
   function renderBatch(results, missed) {
     $("resultCard").classList.remove("hidden");
+    hideGuide();
     $("resultTitle").textContent = "批量检测结果";
     ["lockerBlock", "reasonBlock", "fixBlock", "pathBlock"].forEach((id) => $(id).classList.add("hidden"));
 
@@ -646,7 +674,7 @@
 
   /* ---------- 复制报告 ---------- */
   function buildReportText() {
-    const lines = ["【filelock 诊断报告】"];
+    const lines = ["【LockSleuth 诊断报告】"];
     const concl = $("conclusion").textContent.trim();
     const badges = [...document.querySelectorAll("#statusRow .badge")].map((b) => b.textContent.trim());
     if (badges.length) lines.push("状态: " + badges.join(" | "));
@@ -677,7 +705,7 @@
   /* ---------- 导出 Markdown 报告（方便归档 / 发给同事） ---------- */
   function buildReportMarkdown() {
     const title = $("resultTitle").textContent.trim() || "诊断结果";
-    let md = "# filelock " + title + "\n\n";
+    let md = "# LockSleuth " + title + "\n\n";
     const path = $("pathInput").value.trim();
     if (path) md += "**目标路径**: `" + path + "`\n\n";
     const badges = [...document.querySelectorAll("#statusRow .badge")].map((b) => b.textContent.trim());
@@ -704,7 +732,7 @@
     if (fixes.length) md += "## 🛠 解决办法\n\n" + fixes.map((f, i) => (i + 1) + ". " + f).join("\n") + "\n\n";
     const concl = $("conclusion").textContent.trim();
     if (concl) md += "**结论**: " + concl + "\n";
-    md += "\n> 由 filelock 本地生成 · " + new Date().toLocaleString() + "\n";
+    md += "\n> 由 LockSleuth 本地生成 · " + new Date().toLocaleString() + "\n";
     return md;
   }
 
@@ -713,7 +741,7 @@
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = "filelock_report_" + Date.now() + ".md";
+    a.download = "locksleuth_report_" + Date.now() + ".md";
     document.body.appendChild(a);
     a.click();
     a.remove();
@@ -807,6 +835,28 @@
     histPage = 0; histTotal = 0;
   });
 
+  $("historyToggle").addEventListener("click", () => {
+    const card = $("historyCard");
+    if (card.classList.contains("hidden")) {
+      if (!$("historyList").childElementCount) loadHistory();
+      card.classList.remove("hidden");
+      hideGuide();
+    } else {
+      card.classList.add("hidden");
+    }
+  });
+
+  $("guideScan").addEventListener("click", () => {
+    hideGuide();
+    document.querySelector('.tab[data-tab="scan"]').click();
+    $("pathInput").focus();
+  });
+  $("guidePaste").addEventListener("click", () => {
+    hideGuide();
+    document.querySelector('.tab[data-tab="paste"]').click();
+    $("pasteInput").focus();
+  });
+
   loadHistory();
 
   /* ---------- 等待释放（每 2 秒重扫；setTimeout 自调度，请求慢时不叠请求） ---------- */
@@ -848,6 +898,18 @@
       waitTimer = setTimeout(tick, 2000);
     };
     tick();
+  });
+
+  /* ---------- Esc 快捷键：关闭提示 / 停止等待释放 ---------- */
+  document.addEventListener("keydown", (e) => {
+    if (e.key !== "Escape") return;
+    const wrap = $("toastWrap");
+    if (wrap && wrap.children.length) { wrap.innerHTML = ""; return; }
+    if (waitTimer) {
+      clearTimeout(waitTimer);
+      waitTimer = null;
+      setWaitUI(false);
+    }
   });
 
   /* ---------- 强力清除（释放句柄 → 删除 → 复测） ---------- */

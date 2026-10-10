@@ -1,13 +1,13 @@
 /*
  * autostart.c — 开机自启注册（Windows / macOS / Linux）
- *   filelock --install-autostart    注册开机自启（登录后静默启动界面服务）
- *   filelock --uninstall-autostart  移除开机自启
- *   filelock --autostart-status     查看是否已注册
+ *   LockSleuth --install-autostart    注册开机自启（登录后静默启动界面服务）
+ *   LockSleuth --uninstall-autostart  移除开机自启
+ *   LockSleuth --autostart-status     查看是否已注册
  *
  * 落点（都只影响当前用户，不需要管理员）：
  *   Windows: HKCU\Software\Microsoft\Windows\CurrentVersion\Run
- *   macOS  : ~/Library/LaunchAgents/com.wsjgdg.filelock.plist
- *   Linux  : ~/.config/autostart/filelock.desktop
+ *   macOS  : ~/Library/LaunchAgents/com.wsjgdg.LockSleuth.plist
+ *   Linux  : ~/.config/autostart/LockSleuth.desktop
  * 启动参数统一用 --no-open：开机后台跑服务，不弹浏览器打扰用户，
  * 系统托盘或手动访问 http://127.0.0.1:8632/ 即可打开界面。
  */
@@ -17,7 +17,7 @@
 #  include <sys/stat.h>
 #endif
 
-#define AUTOSTART_NAME "filelock"
+#define AUTOSTART_NAME "LockSleuth"
 #define LAUNCH_ARGS    "--no-open"
 
 /* 自身可执行文件完整路径（自启动项需要绝对路径） */
@@ -82,7 +82,7 @@ static void autostart_path(char *out, size_t n)
     const char *home = getenv("HOME");
     if (!home || !home[0]) return;
 #if defined(__APPLE__)
-    snprintf(out, n, "%s/Library/LaunchAgents/com.wsjgdg.filelock.plist", home);
+    snprintf(out, n, "%s/Library/LaunchAgents/com.wsjgdg.LockSleuth.plist", home);
 #else
     snprintf(out, n, "%s/.config/autostart/" AUTOSTART_NAME ".desktop", home);
 #endif
@@ -126,7 +126,7 @@ int install_autostart(char *err, size_t ne)
         "<plist version=\"1.0\">\n"
         "<dict>\n"
         "  <key>Label</key>\n"
-        "  <string>com.wsjgdg.filelock</string>\n"
+        "  <string>com.wsjgdg.LockSleuth</string>\n"
         "  <key>ProgramArguments</key>\n"
         "  <array>\n"
         "    <string>%s</string>\n"
@@ -143,7 +143,7 @@ int install_autostart(char *err, size_t ne)
         "[Desktop Entry]\n"
         "Type=Application\n"
         "Version=1.0\n"
-        "Name=filelock 文件占用诊断器\n"
+        "Name=LockSleuth 文件占用诊断器\n"
         "Comment=后台常驻，随时查文件被谁占用\n"
         "Exec=%s " LAUNCH_ARGS "\n"
         "Terminal=false\n"

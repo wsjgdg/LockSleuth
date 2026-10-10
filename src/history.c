@@ -1,8 +1,8 @@
 /*
  * history.c — 检测历史记录（本地留档，JSON Lines 格式）
  * 存储位置：
- *   Windows: %APPDATA%\filelock_history.jsonl
- *   其他    : $HOME/.filelock_history.jsonl
+ *   Windows: %APPDATA%\LockSleuth_history.jsonl
+ *   其他    : $HOME/.LockSleuth_history.jsonl
  */
 #include "filelock.h"
 #include <time.h>
@@ -37,10 +37,10 @@ static void history_file(char *out, size_t n)
     char appdata[1024] = "";
     DWORD len = GetEnvironmentVariableA("APPDATA", appdata, sizeof(appdata));
     if (len == 0 || len >= sizeof(appdata)) snprintf(appdata, sizeof(appdata), ".");
-    snprintf(out, n, "%s\\filelock_history.jsonl", appdata);
+    snprintf(out, n, "%s\\LockSleuth_history.jsonl", appdata);
 #else
     const char *home = getenv("HOME");
-    snprintf(out, n, "%s/.filelock_history.jsonl", home && home[0] ? home : ".");
+    snprintf(out, n, "%s/.LockSleuth_history.jsonl", home && home[0] ? home : ".");
 #endif
 }
 

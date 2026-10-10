@@ -15,11 +15,15 @@
 #endif
 #include <time.h>
 #include "filelock.h"
+#ifdef _MSC_VER
+#pragma warning(disable:4828)   /* 内嵌 UI(web_embedded.h) 含 UTF-8 中文；/utf-8 下本不触发，此处兜底 */
+#endif
 #include "web_embedded.h"   /* 构建时由 tools/embed_web.c 生成 */
 #ifndef _WIN32
 #  include <pthread.h>
+#  include <arpa/inet.h>    /* inet_pton */
 #else
-#  include <direct.h>       /* _rmdir */
+#  include <direct.h>       /* _rmdir, _getcwd */
 #endif
 
 #ifdef _MSC_VER
@@ -542,7 +546,11 @@ static int path_in_webroot(const char *path)
     size_t lens[2];
     int nr = 0;
     if (g_webroot[0]) { roots[nr] = g_webroot; lens[nr] = strlen(g_webroot); nr++; }
+#ifdef _WIN32
+    if (_getcwd(cwd, (int)sizeof(cwd))) {
+#else
     if (getcwd(cwd, sizeof(cwd))) {
+#endif
         static char rel[4160];
         snprintf(rel, sizeof(rel), "%s/web", cwd);
         roots[nr] = rel; lens[nr] = strlen(rel); nr++;
@@ -577,7 +585,7 @@ static void api_act(sock_t s, const char *body)
     /* 自我保护：拒绝删除本程序目录下的 web 资源（源码运行模式下
      * webroot 指向仓库内 web/，误删会导致界面丢失） */
     if (path_in_webroot(path)) {
-        send_json(s, "{\"ok\":0,\"error\":\"出于安全考虑，不允许删除 filelock 自身的界面文件\"}");
+        send_json(s, "{\"ok\":0,\"error\":\"出于安全考虑，不允许删除 LockSleuth 自身的界面文件\"}");
         return;
     }
     struct stat st;
@@ -645,7 +653,7 @@ static void api_force_clean(sock_t s, const char *body)
 
     /* 自我保护：拒绝删除本程序目录下的 web 资源（与 /api/act 同规则） */
     if (path_in_webroot(path)) {
-        send_json(s, "{\"ok\":0,\"error\":\"出于安全考虑，不允许删除 filelock 自身的界面文件\"}");
+        send_json(s, "{\"ok\":0,\"error\":\"出于安全考虑，不允许删除 LockSleuth 自身的界面文件\"}");
         return;
     }
 
@@ -829,7 +837,7 @@ static void api_kill(sock_t s, const char *body)
         if (!(*p >= '0' && *p <= '9')) { send_json(s, "{\"ok\":0,\"error\":\"缺少有效 pid\"}"); return; }
     }
     if (pid > 0x7FFFFFFF) { send_json(s, "{\"ok\":0,\"error\":\"缺少有效 pid\"}"); return; }
-    /* 自我保护：拒绝结束 filelock 自身（kill_locker 内也有同样防线） */
+    /* 自我保护：拒绝结束 LockSleuth 自身（kill_locker 内也有同样防线） */
     long self_pid = 0;
 #ifdef _WIN32
     self_pid = (long)GetCurrentProcessId();
@@ -837,7 +845,7 @@ static void api_kill(sock_t s, const char *body)
     self_pid = (long)getpid();
 #endif
     if (pid == self_pid) {
-        send_json(s, "{\"ok\":0,\"error\":\"不能结束 filelock 自身的进程\"}");
+        send_json(s, "{\"ok\":0,\"error\":\"不能结束 LockSleuth 自身的进程\"}");
         return;
     }
     Locker L; memset(&L, 0, sizeof(L)); L.pid = pid;
@@ -1114,7 +1122,7 @@ int httpd_serve(const char *webroot, int *port, void (*on_ready)(int port))
     struct sockaddr_in addr;
     memset(&addr, 0, sizeof(addr));
     addr.sin_family = AF_INET;
-    addr.sin_addr.s_addr = inet_addr("127.0.0.1");
+    inet_pton(AF_INET, "127.0.0.1", &addr.sin_addr);
 
     int bound = 0;
     for (int p = *port; p < *port + 20; p++) {

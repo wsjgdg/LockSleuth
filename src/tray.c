@@ -1,5 +1,5 @@
 /*
- * tray.c — Windows 系统托盘常驻（filelock --tray）
+ * tray.c — Windows 系统托盘常驻（LockSleuth --tray）
  *   启动本地服务后把进程收进托盘，不占任务栏：
  *     · 左键单击 / 菜单「打开界面」→ 打开浏览器界面
  *     · 菜单「退出」→ 结束进程
@@ -84,11 +84,11 @@ int tray_serve(const char *webroot, int *port)
     memset(&wc, 0, sizeof(wc));
     wc.lpfnWndProc   = tray_wnd_proc;
     wc.hInstance     = hi;
-    wc.lpszClassName = L"filelockTrayWnd";
+    wc.lpszClassName = L"LockSleuthTrayWnd";
     if (!RegisterClassW(&wc)) return -1;
 
     /* 只创建消息窗口，不显示 */
-    HWND hwnd = CreateWindowW(L"filelockTrayWnd", L"filelock", 0,
+    HWND hwnd = CreateWindowW(L"LockSleuthTrayWnd", L"LockSleuth", 0,
                               0, 0, 0, 0, NULL, NULL, hi, NULL);
     if (!hwnd) return -1;
 
@@ -99,7 +99,7 @@ int tray_serve(const char *webroot, int *port)
     g_nid.uFlags           = NIF_MESSAGE | NIF_ICON | NIF_TIP;
     g_nid.uCallbackMessage = WM_TRAY;
     g_nid.hIcon            = LoadIconW(NULL, (LPCWSTR)IDI_APPLICATION);
-    lstrcpynW(g_nid.szTip, L"filelock — 文件占用诊断器",
+    lstrcpynW(g_nid.szTip, L"LockSleuth — 文件占用诊断器",
               (int)(sizeof(g_nid.szTip) / sizeof(g_nid.szTip[0])));
     if (!Shell_NotifyIconW(NIM_ADD, &g_nid)) {
         DestroyWindow(hwnd);

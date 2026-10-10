@@ -17,7 +17,10 @@
       <p>查明文件为什么被占用 · 直接给出解决办法</p>
     </div>
   </div>
-  <div class="badge platform" id="platform">检测中…</div>
+  <div class="head-right-top">
+    <button class="badge theme-toggle" id="themeToggle" aria-label="切换深色 / 浅色模式" title="切换深色 / 浅色">🌙</button>
+    <div class="badge platform" id="platform">检测中…</div>
+  </div>
 </header>
 
 <main>
@@ -34,8 +37,8 @@
                placeholder="输入或粘贴文件 / 文件夹路径，例如 C:\Users\me\Desktop\报表.xlsx">
       </div>
       <div class="row btns">
-        <button class="btn ghost" id="browseFile">🗂 选择文件</button>
-        <button class="btn ghost" id="browseDir">📂 选择文件夹</button>
+        <button class="btn ghost" id="browseFile" aria-label="选择文件">🗂 选择文件</button>
+        <button class="btn ghost" id="browseDir" aria-label="选择文件夹">📂 选择文件夹</button>
         <button class="btn primary" id="scanBtn">🔍 开始检测</button>
       </div>
       <div class="drop-hint">💡 也可以直接把文件 / 文件夹拖进页面</div>
@@ -61,6 +64,20 @@
     </div>
   </section>
 
+  <section class="card guide" id="guideCard">
+    <h3>👋 欢迎，先挑一种方式开始</h3>
+    <ul class="guide-list">
+      <li><b>📁 文件 / 文件夹检测</b>：粘贴路径或拖入文件，立刻列出是谁占用了它、能否读 / 写 / 删，并给出解决办法。</li>
+      <li><b>📋 报错提示分析</b>：把系统弹出的报错整段粘贴进来，自动匹配原因与对策（支持中英文、OCR / 复制粘来的错乱文本）。</li>
+      <li><b>⚡ 一键处置</b>：释放占用句柄、强力清除、直接删除，都在结果卡片里。</li>
+      <li><b>🔒 完全本地</b>：服务只监听本机 <code>127.0.0.1</code>，不上传任何数据。</li>
+    </ul>
+    <div class="guide-actions">
+      <button class="btn primary" id="guideScan">📁 去检测文件</button>
+      <button class="btn ghost" id="guidePaste">📋 去分析报错</button>
+    </div>
+  </section>
+
   <section class="card hidden" id="resultCard">
     <div class="result-head">
       <h2 id="resultTitle">诊断结果</h2>
@@ -69,14 +86,16 @@
 
     <div class="action-bar">
       <div class="action-group">
-        <button class="btn ghost" id="waitBtn">⏳ 等待释放</button>
-        <button class="btn ghost" id="unlockBtn">🔓 释放占用</button>
-        <button class="btn primary" id="forceCleanBtn">⚡ 强力清除</button>
+        <button class="btn ghost" id="copyReport" aria-label="复制报告">📋 复制报告</button>
+        <button class="btn ghost" id="exportMd" aria-label="导出报告">📥 导出报告</button>
       </div>
       <div class="action-group">
-        <button class="btn ghost" id="copyReport">📋 复制报告</button>
-        <button class="btn ghost" id="exportMd">📥 导出报告</button>
-        <button class="btn danger" id="deleteBtn">🗑 删除</button>
+        <button class="btn ghost" id="waitBtn" aria-label="等待释放">⏳ 等待释放</button>
+        <button class="btn ghost" id="unlockBtn" aria-label="释放占用">🔓 释放占用</button>
+      </div>
+      <div class="action-group danger-group">
+        <button class="btn danger" id="forceCleanBtn" aria-label="强力清除">⚡ 强力清除</button>
+        <button class="btn danger" id="deleteBtn" aria-label="删除">🗑 删除</button>
       </div>
     </div>
 
@@ -123,7 +142,7 @@
   <section class="card hidden" id="historyCard">
     <div class="tips-head">
       <h3>🕘 检测历史</h3>
-      <button class="btn danger" id="clearHistory">清空历史</button>
+      <button class="btn danger sm" id="clearHistory">清空历史</button>
     </div>
     <div class="history-list" id="historyList"></div>
     <div class="hist-pager hidden" id="histPager">
@@ -136,10 +155,13 @@
   <section class="card tips">
     <div class="tips-head">
       <h3>💡 小提示</h3>
-      <label class="check">
-        <input type="checkbox" id="clipWatch" checked>
-        自动感知剪贴板里的报错提示
-      </label>
+      <div class="tips-head-right">
+        <button class="btn ghost sm" id="historyToggle" aria-label="显示或隐藏检测历史">🕘 历史</button>
+        <label class="check">
+          <input type="checkbox" id="clipWatch" checked>
+          自动感知剪贴板里的报错提示
+        </label>
+      </div>
     </div>
     <ul>
       <li>直接把<b>文件/文件夹拖进本页面</b>即可检测（自动定位真实路径）</li>
@@ -157,7 +179,7 @@
 </div>
 <div id="toastWrap"></div>
 
-<footer>filelock · 本地运行 · 数据不出本机</footer>
+<footer>LockSleuth · 本地运行 · 数据不出本机</footer>
 <script src="app.js"></script>
 </body>
 </html>

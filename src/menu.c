@@ -1,7 +1,7 @@
 /*
  * menu.c — 资源管理器右键菜单集成（Windows）
- *   filelock --install-menu    注册右键菜单「用 filelock 查占用」
- *   filelock --uninstall-menu  移除右键菜单
+ *   LockSleuth --install-menu    注册右键菜单「用 LockSleuth 查占用」
+ *   LockSleuth --uninstall-menu  移除右键菜单
  *   写入 HKCU（当前用户），不需要管理员。
  *   macOS/Linux 提示使用系统自带方式（README 有说明）。
  */
@@ -36,21 +36,21 @@ int install_context_menu(char *err, size_t ne)
     snprintf(cmd, sizeof(cmd), "\"%s\" \"%%1\"", exe);
 
     /* 所有文件 */
-    if (!set_reg_sz(HKEY_CURRENT_USER, "Software\\Classes\\*\\shell\\filelock", NULL,
-                    "用 filelock 查占用（原因+对策）", err, ne)) return 0;
-    if (!set_reg_sz(HKEY_CURRENT_USER, "Software\\Classes\\*\\shell\\filelock", "Icon", exe, err, ne)) return 0;
-    if (!set_reg_sz(HKEY_CURRENT_USER, "Software\\Classes\\*\\shell\\filelock\\command", NULL, cmd, err, ne)) return 0;
+    if (!set_reg_sz(HKEY_CURRENT_USER, "Software\\Classes\\*\\shell\\LockSleuth", NULL,
+                    "用 LockSleuth 查占用（原因+对策）", err, ne)) return 0;
+    if (!set_reg_sz(HKEY_CURRENT_USER, "Software\\Classes\\*\\shell\\LockSleuth", "Icon", exe, err, ne)) return 0;
+    if (!set_reg_sz(HKEY_CURRENT_USER, "Software\\Classes\\*\\shell\\LockSleuth\\command", NULL, cmd, err, ne)) return 0;
 
     /* 文件夹 */
-    if (!set_reg_sz(HKEY_CURRENT_USER, "Software\\Classes\\Directory\\shell\\filelock", NULL,
-                    "用 filelock 查占用（原因+对策）", err, ne)) return 0;
-    if (!set_reg_sz(HKEY_CURRENT_USER, "Software\\Classes\\Directory\\shell\\filelock", "Icon", exe, err, ne)) return 0;
-    if (!set_reg_sz(HKEY_CURRENT_USER, "Software\\Classes\\Directory\\shell\\filelock\\command", NULL, cmd, err, ne)) return 0;
+    if (!set_reg_sz(HKEY_CURRENT_USER, "Software\\Classes\\Directory\\shell\\LockSleuth", NULL,
+                    "用 LockSleuth 查占用（原因+对策）", err, ne)) return 0;
+    if (!set_reg_sz(HKEY_CURRENT_USER, "Software\\Classes\\Directory\\shell\\LockSleuth", "Icon", exe, err, ne)) return 0;
+    if (!set_reg_sz(HKEY_CURRENT_USER, "Software\\Classes\\Directory\\shell\\LockSleuth\\command", NULL, cmd, err, ne)) return 0;
 
     /* 文件夹背景 */
-    if (!set_reg_sz(HKEY_CURRENT_USER, "Software\\Classes\\Directory\\Background\\shell\\filelock", NULL,
-                    "用 filelock 查占用（原因+对策）", err, ne)) return 0;
-    if (!set_reg_sz(HKEY_CURRENT_USER, "Software\\Classes\\Directory\\Background\\shell\\filelock\\command", NULL,
+    if (!set_reg_sz(HKEY_CURRENT_USER, "Software\\Classes\\Directory\\Background\\shell\\LockSleuth", NULL,
+                    "用 LockSleuth 查占用（原因+对策）", err, ne)) return 0;
+    if (!set_reg_sz(HKEY_CURRENT_USER, "Software\\Classes\\Directory\\Background\\shell\\LockSleuth\\command", NULL,
                     cmd, err, ne)) return 0;
     return 1;
 }
@@ -58,9 +58,9 @@ int install_context_menu(char *err, size_t ne)
 int uninstall_context_menu(char *err, size_t ne)
 {
     (void)err; (void)ne;
-    del_reg_tree(HKEY_CURRENT_USER, "Software\\Classes\\*\\shell\\filelock");
-    del_reg_tree(HKEY_CURRENT_USER, "Software\\Classes\\Directory\\shell\\filelock");
-    del_reg_tree(HKEY_CURRENT_USER, "Software\\Classes\\Directory\\Background\\shell\\filelock");
+    del_reg_tree(HKEY_CURRENT_USER, "Software\\Classes\\*\\shell\\LockSleuth");
+    del_reg_tree(HKEY_CURRENT_USER, "Software\\Classes\\Directory\\shell\\LockSleuth");
+    del_reg_tree(HKEY_CURRENT_USER, "Software\\Classes\\Directory\\Background\\shell\\LockSleuth");
     return 1;
 }
 

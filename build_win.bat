@@ -1,6 +1,6 @@
 @echo off
 rem =====================================================
-rem  filelock Windows 构建脚本
+rem  LockSleuth Windows 构建脚本
 rem  用法：双击运行，或在 cmd 中执行 build_win.bat
 rem  支持 MSVC(cl) 或 MinGW(gcc)，自动检测已安装的编译器
 rem =====================================================
@@ -41,7 +41,7 @@ if not exist src\web_embedded.h (
 where cl >nul 2>nul
 if %errorlevel%==0 (
     echo [1/1] 使用 MSVC 编译...
-    cl /utf-8 /O2 /W3 /D_CRT_SECURE_NO_WARNINGS src\main.c src\diagnose.c src\rules.c src\browse.c src\clipboard.c src\locate.c src\history.c src\close_handle.c src\menu.c src\jsonutil.c src\httpd.c src\open.c src\autostart.c src\tray.c /Fe:filelock.exe /link rstrtmgr.lib comdlg32.lib shell32.lib ole32.lib ws2_32.lib advapi32.lib user32.lib
+    cl /utf-8 /O2 /W3 /D_CRT_SECURE_NO_WARNINGS src\main.c src\diagnose.c src\rules.c src\browse.c src\clipboard.c src\locate.c src\history.c src\close_handle.c src\menu.c src\jsonutil.c src\httpd.c src\open.c src\autostart.c src\tray.c /Fe:LockSleuth.exe /link rstrtmgr.lib comdlg32.lib shell32.lib ole32.lib ws2_32.lib advapi32.lib user32.lib
     if %errorlevel% neq 0 goto :fail
     goto :ok
 )
@@ -49,7 +49,7 @@ if %errorlevel%==0 (
 where gcc >nul 2>nul
 if %errorlevel%==0 (
     echo [1/1] 使用 MinGW gcc 编译...
-    gcc -O2 -Wall src\main.c src\diagnose.c src\rules.c src\browse.c src\clipboard.c src\locate.c src\history.c src\close_handle.c src\menu.c src\jsonutil.c src\httpd.c src\open.c src\autostart.c src\tray.c -o filelock.exe -lrstrtmgr -lcomdlg32 -lshell32 -lole32 -lws2_32 -ladvapi32 -luser32
+    gcc -O2 -Wall src\main.c src\diagnose.c src\rules.c src\browse.c src\clipboard.c src\locate.c src\history.c src\close_handle.c src\menu.c src\jsonutil.c src\httpd.c src\open.c src\autostart.c src\tray.c -o LockSleuth.exe -lrstrtmgr -lcomdlg32 -lshell32 -lole32 -lws2_32 -ladvapi32 -luser32
     if %errorlevel% neq 0 goto :fail
     goto :ok
 )
@@ -62,9 +62,9 @@ exit /b 1
 
 :ok
 echo.
-echo ✔ 构建完成：filelock.exe（界面已内嵌，单文件即可分发）
-echo   双击 filelock.exe 即可打开图形界面
-echo   可选：filelock.exe --install-menu 注册右键菜单
+echo ✔ 构建完成：LockSleuth.exe（界面已内嵌，单文件即可分发）
+echo   双击 LockSleuth.exe 即可打开图形界面
+echo   可选：LockSleuth.exe --install-menu 注册右键菜单
 pause
 exit /b 0
 

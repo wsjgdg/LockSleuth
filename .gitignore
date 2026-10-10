@@ -1,6 +1,6 @@
 # 构建产物
-filelock
-filelock.exe
+LockSleuth
+LockSleuth.exe
 tools/embed_web
 tools/embed_web.exe
 src/web_embedded.h

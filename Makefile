@@ -1,5 +1,5 @@
-# filelock — 文件占用诊断器
-#   make          构建 ./filelock（macOS / Linux）
+# LockSleuth — 文件占用诊断器
+#   make          构建 ./LockSleuth（macOS / Linux）
 #   make run      构建并启动图形界面
 #   make clean    清理
 
@@ -9,13 +9,13 @@ CFLAGS  ?= -O2 -Wall -Wextra
 # _DEFAULT_SOURCE: 严格模式下显式暴露 nanosleep/strcasestr 等 POSIX 扩展
 # （注意：必须写在 CFLAGS ?= 之后，否则 ?= 不生效）
 CFLAGS  += -D_DEFAULT_SOURCE
-BIN     := filelock
+BIN     := LockSleuth
 EMBED   := src/web_embedded.h
 SRC     := src/main.c src/diagnose.c src/rules.c src/browse.c src/clipboard.c src/locate.c src/history.c src/close_handle.c src/menu.c src/jsonutil.c src/httpd.c src/open.c src/autostart.c src/tray.c
 
 ifeq ($(OS),Windows_NT)
   LDFLAGS := -lws2_32 -lcomdlg32 -lshell32 -lole32 -ladvapi32 -luser32 -lrstrtmgr
-  BIN := filelock.exe
+  BIN := LockSleuth.exe
 else
   UNAME := $(shell uname -s)
   LDFLAGS := -pthread
@@ -48,6 +48,6 @@ test: tests/unit_test tests/unit_history
 	@HOME=$$(mktemp -d) ./tests/unit_history
 
 clean:
-	rm -f $(BIN) filelock.exe tools/embed_web tools/embed_web.exe tests/unit_test tests/unit_history $(EMBED)
+	rm -f $(BIN) LockSleuth.exe tools/embed_web tools/embed_web.exe tests/unit_test tests/unit_history $(EMBED)
 
 .PHONY: all run test clean

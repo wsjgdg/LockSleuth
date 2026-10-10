@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
-# smoke_test.sh — filelock Web 服务自动化冒烟测试
+# smoke_test.sh — LockSleuth Web 服务自动化冒烟测试
 # 用法: ./tests/smoke_test.sh [端口，默认随机高位端口]
 # 退出码: 0 = 全部通过；1 = 有失败项
 set -u
 
 DIR="$(cd "$(dirname "$0")/.." && pwd)"
-BIN="$DIR/filelock"
+BIN="$DIR/LockSleuth"
 PORT="${1:-$(( (RANDOM % 20000) + 30000 ))}"
 BASE="http://127.0.0.1:$PORT"
-HIST="${HOME}/.filelock_history.jsonl"
+HIST="${HOME}/.LockSleuth_history.jsonl"
 HIST_BAK=""
 
 PASS=0; FAIL=0
@@ -74,7 +74,7 @@ check "/api/analyze 规则匹配"     '"rules"'            "$(T -X POST "${AUTH[
 echo "== 4. kill 边界校验 =="
 check "kill pid=0 被拒"           '缺少有效 pid'       "$(T -X POST "${AUTH[@]}" $BASE/api/kill -d '{"pid":0}')"
 check "kill 非数字被拒"           '缺少有效 pid'       "$(T -X POST "${AUTH[@]}" $BASE/api/kill -d '{"pid":"abc"}')"
-check "kill 自身 PID 被拒"        '不能结束 filelock'  "$(T -X POST "${AUTH[@]}" $BASE/api/kill -d "{\"pid\":$SRV_PID}")"
+check "kill 自身 PID 被拒"        '不能结束 LockSleuth'  "$(T -X POST "${AUTH[@]}" $BASE/api/kill -d "{\"pid\":$SRV_PID}")"
 
 echo "== 5. 自我保护（webroot 删除防线）=="
 WR_ERR=$(T -X POST "${AUTH[@]}" $BASE/api/act -d "{\"op\":\"delete\",\"path\":\"$DIR/web/app.js\"}")
